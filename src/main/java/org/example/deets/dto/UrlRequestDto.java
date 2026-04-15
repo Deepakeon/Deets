@@ -1,4 +1,4 @@
-package org.example.deets;
+package org.example.deets.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

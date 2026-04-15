@@ -1,4 +1,4 @@
-package org.example.deets;
+package org.example.deets.exceptions;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

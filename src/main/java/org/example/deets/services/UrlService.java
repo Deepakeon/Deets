@@ -1,5 +1,9 @@
-package org.example.deets;
+package org.example.deets.services;
 
+import org.example.deets.exceptions.UrlNotFoundException;
+import org.example.deets.utils.Base62;
+import org.example.deets.models.Url;
+import org.example.deets.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +27,7 @@ public class UrlService {
     public String getOrShortenUrl(String longUrl){
         Optional<Url> alreadyPresentUrl = getUrlByLongUrl(longUrl);
         if(alreadyPresentUrl.isPresent()){
-            return alreadyPresentUrl.get().getShortUrl();
+            return alreadyPresentUrl.get().getCode();
         }else{
             return shortenUrl(longUrl);
         }
@@ -32,19 +36,31 @@ public class UrlService {
     public String shortenUrl(String longUrl){
         UUID id = UUID.randomUUID();
         String base62EncodedId = Base62.encodeUuid(id);
-        String shortUrl = "%s/%s".formatted(appBaseUrl, base62EncodedId);
-        Url url = Url.builder().id(id).longUrl(longUrl).shortUrl(shortUrl).build();
+        Url url = Url.builder().id(id).longUrl(longUrl).code(base62EncodedId).build();
         repository.save(url);
-        return shortUrl;
+        return "%s/%s".formatted(appBaseUrl, base62EncodedId);
     }
 
     public Optional<Url> getUrlByEncoding(String encoding){
-        String shortUrl = "%s/%s".formatted(appBaseUrl, encoding);
-        return repository.findUrlByShortUrl(shortUrl);
+        return repository.findUrlByCode(encoding);
+    }
+
+    public Optional<Url> getUrlById(UUID id){
+        return repository.findById(id);
     }
 
     public Optional<Url> getUrlByLongUrl(String longUrl){
         return repository.findUrlByLongUrl(longUrl);
+    }
+
+    public Url updateUrl(UUID id, String code){
+        Optional<Url> url = getUrlById(id);
+        if(url.isEmpty()){
+            throw new UrlNotFoundException("Url not found");
+        }
+
+        url.get().setCode(code);
+        return repository.save(url.get());
     }
 
 }

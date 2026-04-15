@@ -1,4 +1,4 @@
-package org.example.deets;
+package org.example.deets.models;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,16 +13,16 @@ import java.util.UUID;
 @Table(
         name="urls",
         indexes = @Index(
-                name = "IDX_short_url",
-                columnList = "short_url"
+                name = "idx_code",
+                columnList = "code"
         )
 )
 public class Url {
     @Id
     private UUID id;
 
-    @Column(name = "short_url", nullable = false, unique = true)
-    private String shortUrl;
+    @Column(name = "code", nullable = false, unique = true)
+    private String code;
 
     @Column(name = "long_url", nullable = false, unique = true)
     private String longUrl;

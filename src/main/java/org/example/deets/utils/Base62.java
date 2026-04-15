@@ -1,4 +1,4 @@
-package org.example.deets;
+package org.example.deets.utils;
 
 import java.math.BigInteger;
 import java.util.UUID;
