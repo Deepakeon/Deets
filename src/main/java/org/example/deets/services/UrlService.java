@@ -6,6 +6,7 @@ import org.example.deets.utils.Base62;
 import org.example.deets.models.Url;
 import org.example.deets.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,6 +25,14 @@ public class UrlService {
     private String getUrlWithCode(String code){
         return "%s/%s".formatted(appBaseUrl, code);
     }
+
+    private Url saveUrlToDb(Url url){
+        try {
+            return repository.save(url);
+        } catch (DataIntegrityViolationException dev) {
+            throw new IllegalArgumentException("Alias already exists");
+        }
+    }
     public String getOrShortenUrl(String longUrl){
         Optional<Url> alreadyPresentUrl = getUrlByLongUrl(longUrl);
         return alreadyPresentUrl.map(url -> getUrlWithCode(url.getCode())).orElseGet(() -> shortenUrl(longUrl));
@@ -37,9 +46,12 @@ public class UrlService {
         return getUrlWithCode(base62EncodedId);
     }
 
-    public Optional<Url> getUrlByEncoding(String encoding){
-
-        return repository.findUrlByCode(encoding);
+    public Optional<Url> getUrlByCode(String code){
+        return redisService.getOrCache(
+                code,
+                Url.class,
+                () -> repository.findUrlByCode(code)
+        );
     }
 
     public Optional<Url> getUrlById(UUID id){
@@ -65,7 +77,8 @@ public class UrlService {
         }
 
         url.get().setCode(code);
-        return repository.save(url.get());
+        redisService.delete(code);
+        return saveUrlToDb(url.get());
     }
 
 }

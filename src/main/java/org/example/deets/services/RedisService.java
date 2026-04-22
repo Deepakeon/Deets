@@ -38,8 +38,7 @@ public class RedisService {
 
     public void setValueWithExpiry(String key, String value, long seconds) {
         try (Jedis jedis = redis.getResource()) {
-            jedis.set(key, value);
-            jedis.expire(key, seconds);
+            jedis.setex(key, seconds, value);
         }
     }
 
@@ -52,6 +51,12 @@ public class RedisService {
     public boolean exists(String key) {
         try (Jedis jedis = redis.getResource()) {
             return jedis.exists(key);
+        }
+    }
+
+    public void delete(String key) {
+        try (Jedis jedis = redis.getResource()) {
+            jedis.del(key);
         }
     }
 }

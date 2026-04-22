@@ -28,9 +28,9 @@ public class UrlController {
                 .body(code);
     }
 
-    @GetMapping("/{encoding}")
-    public ResponseEntity<Void> redirectToUrl(@PathVariable String encoding){
-        Url url = urlService.getUrlByEncoding(encoding).orElseThrow(() -> new UrlNotFoundException("url not found"));
+    @GetMapping("/{code}")
+    public ResponseEntity<Void> redirectToUrl(@PathVariable String code){
+        Url url = urlService.getUrlByCode(code).orElseThrow(() -> new UrlNotFoundException("url not found"));
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(url.getLongUrl()))
@@ -42,7 +42,7 @@ public class UrlController {
         Url url = urlService.updateUrl(id, urlUpdateRequestDto.getCode());
 
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .status(HttpStatus.OK)
                 .body(url);
     }
 }

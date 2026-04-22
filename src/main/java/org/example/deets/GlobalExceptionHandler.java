@@ -1,6 +1,8 @@
 package org.example.deets;
 
+import org.example.deets.exceptions.ApiErrorResponse;
 import org.example.deets.exceptions.UrlNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,7 +17,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ve){
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ve){
         Map<String, String> errorMap = new HashMap<>();
 
         ve.getBindingResult().getAllErrors().forEach(error -> {
@@ -24,19 +26,30 @@ public class GlobalExceptionHandler {
             errorMap.put(fieldName, message);
         });
 
+        ApiErrorResponse error = ApiErrorResponse.builder().code("VALIDATION_ERROR").details(errorMap).message(ve.getMessage()).build();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(errorMap);
+                .body(error);
     }
 
     @ExceptionHandler(UrlNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleUrlNotFoundException(UrlNotFoundException rse) {
+    public ResponseEntity<ApiErrorResponse> handleUrlNotFoundException(UrlNotFoundException unf) {
         Map<String, String> errorMap = new HashMap<>();
 
-        errorMap.put("error", rse.getMessage());
+        errorMap.put("error", unf.getMessage());
+        ApiErrorResponse error = ApiErrorResponse.builder().code("URL_NOT_FOUND").message("Validation failed").details(errorMap).build();
 
         return ResponseEntity
-                .status(rse.getStatusCode())
-                .body(errorMap);
+                .status(unf.getStatusCode())
+                .body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicate(IllegalArgumentException div) {
+        ApiErrorResponse error = ApiErrorResponse.builder().code("DUPLICATE_VALUE").message(div.getMessage()).build();
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
     }
 }
