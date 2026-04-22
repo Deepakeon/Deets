@@ -1,6 +1,7 @@
 package org.example.deets.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.deets.dto.UrlUpdateRequestDto;
 import org.example.deets.models.Url;
 import org.example.deets.exceptions.UrlNotFoundException;
@@ -14,16 +15,12 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 public class UrlController {
 
     private final UrlService urlService;
 
-    public UrlController(UrlService urlService){
-        this.urlService = urlService;
-    }
-
-    @PostMapping
-    @RequestMapping("/api/urls")
+    @PostMapping("/api/urls")
     public ResponseEntity<String> shortenUrl(@RequestBody @Valid UrlRequestDto urlRequest){
         String code = urlService.getOrShortenUrl(urlRequest.getLongUrl());
         return ResponseEntity
