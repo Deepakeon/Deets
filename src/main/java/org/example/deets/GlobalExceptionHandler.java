@@ -2,7 +2,6 @@ package org.example.deets;
 
 import org.example.deets.exceptions.ApiErrorResponse;
 import org.example.deets.exceptions.UrlNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -26,7 +25,7 @@ public class GlobalExceptionHandler {
             errorMap.put(fieldName, message);
         });
 
-        ApiErrorResponse error = ApiErrorResponse.builder().code("VALIDATION_ERROR").details(errorMap).message(ve.getMessage()).build();
+        ApiErrorResponse error = ApiErrorResponse.builder().code("VALIDATION_ERROR").details(errorMap).message("Validation error").build();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);

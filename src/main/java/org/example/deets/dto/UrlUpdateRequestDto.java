@@ -1,6 +1,6 @@
 package org.example.deets.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UrlUpdateRequestDto {
-    @NotEmpty
+    @Size(min = 8, max = 9, message = "Code must be exactly 8 characters")
     private String code;
 
 }

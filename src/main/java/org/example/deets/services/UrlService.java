@@ -18,6 +18,7 @@ public class UrlService {
 
     private final UrlRepository repository;
     private final RedisService redisService;
+    private final KeyGeneratorService keyGeneratorService;
 
     @Value("${app.base-url}")
     private String appBaseUrl;
@@ -39,9 +40,8 @@ public class UrlService {
     }
 
     public String shortenUrl(String longUrl){
-        UUID id = UUID.randomUUID();
-        String base62EncodedId = Base62.encodeUuid(id);
-        Url url = Url.builder().id(id).longUrl(longUrl).code(base62EncodedId).build();
+        String base62EncodedId = keyGeneratorService.generateRandomCodeWithRetry();
+        Url url = Url.builder().longUrl(longUrl).code(base62EncodedId).build();
         repository.save(url);
         return getUrlWithCode(base62EncodedId);
     }
@@ -77,7 +77,7 @@ public class UrlService {
         }
 
         url.get().setCode(code);
-        redisService.delete(code);
+        redisService.delete(new String[]{code, String.valueOf(id)});
         return saveUrlToDb(url.get());
     }
 

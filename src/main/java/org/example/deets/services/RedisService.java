@@ -54,9 +54,9 @@ public class RedisService {
         }
     }
 
-    public void delete(String key) {
+    public void delete(String[] keys) {
         try (Jedis jedis = redis.getResource()) {
-            jedis.del(key);
+            jedis.del(keys);
         }
     }
 }
