@@ -11,13 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Data
-@Table(
-        name="urls",
-        indexes = @Index(
-                name = "idx_code",
-                columnList = "code"
-        )
-)
+@Table(name="urls")
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
