@@ -32,7 +32,9 @@ To start the application, ensure the Docker daemon is running in the background 
 1. **Verify Docker is running**  
    Make sure the Docker daemon is active so that the application can spin up the required containers automatically during startup.
 
-2. **Run the Spring Boot application**  
+2. **Make sure to change the DB Username & Password in application.properties file**
+
+3. **Run the Spring Boot application**  
    From the project root directory, execute the Maven command:
    ```bash
    mvn spring-boot:run
