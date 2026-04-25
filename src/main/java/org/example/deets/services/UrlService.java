@@ -93,15 +93,15 @@ public class UrlService {
     }
 
     public Url updateUrl(UUID id, String code){
-        Url url = repository.findUrlByIdForUpdate(id).orElseThrow(() -> {
-            log.warn("Update failed url with id: {} not found", id);
-            return new UrlNotFoundException("Url not found");
-        });
+        Optional<Url> url = getUrlById(id);
+        if(url.isEmpty()){
+            throw new UrlNotFoundException("Url not found");
+        }
 
-        redisService.delete(new String[]{url.getCode(), String.valueOf(id)});
-        url.setCode(code);
-        log.info("Url updated successfully with id: {}, new: {}", url.getId(), url.getCode());
-        return saveUrlToDb(url);
+        url.get().setCode(code);
+        redisService.delete(new String[]{code, String.valueOf(id)});
+        log.info("Url updated successfully with id: {}, new: {}", url.get().getId(), url.get().getCode());
+        return saveUrlToDb(url.get());
     }
 
 }
