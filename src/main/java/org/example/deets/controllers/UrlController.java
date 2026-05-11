@@ -25,7 +25,6 @@ public class UrlController {
     @PostMapping("/api/urls")
     public ResponseEntity<String> shortenUrl(@RequestBody @Valid UrlRequestDto urlRequest){
         log.info("Shorten url request received for longUrl ({})", urlRequest.getLongUrl());
-
         String code = urlService.getOrShortenUrl(urlRequest.getLongUrl());
         log.info("Url shortened successfully to code: ({})", code);
 

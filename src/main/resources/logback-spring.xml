@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <!-- ========================= -->
+    <!-- FILE APPENDER -->
+    <!-- ========================= -->
+
+    <appender name="JSON_FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>logs/application.log</file>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>
+            logs/application-%d{yyyy-MM-dd}.%i.log
+        </fileNamePattern>
+
+            <fileNamePattern>
+                logs/application-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+
+            <maxFileSize>10MB</maxFileSize>
+
+            <maxHistory>30</maxHistory>
+
+            <totalSizeCap>1GB</totalSizeCap>
+
+        </rollingPolicy>
+
+        <encoder
+                class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+
+            <providers>
+
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+
+                <threadName>
+                    <fieldName>thread</fieldName>
+                </threadName>
+
+                <loggerName>
+                    <fieldName>logger</fieldName>
+                </loggerName>
+
+                <message>
+                    <fieldName>message</fieldName>
+                </message>
+
+                <mdc/>
+
+                <stackTrace>
+                    <fieldName>exception</fieldName>
+                </stackTrace>
+
+            </providers>
+
+        </encoder>
+
+    </appender>
+
+    <!-- ========================= -->
+    <!-- ASYNC APPENDER -->
+    <!-- ========================= -->
+
+    <appender name="ASYNC_JSON_FILE"
+              class="ch.qos.logback.classic.AsyncAppender">
+
+        <!-- Queue size -->
+        <queueSize>5000</queueSize>
+
+        <!-- Drop TRACE/DEBUG logs when queue is full -->
+        <discardingThreshold>0</discardingThreshold>
+
+        <!-- Never block request thread -->
+        <neverBlock>true</neverBlock>
+
+        <appender-ref ref="JSON_FILE"/>
+
+    </appender>
+
+    <!-- ========================= -->
+    <!-- ROOT LOGGER -->
+    <!-- ========================= -->
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_JSON_FILE"/>
+    </root>
+
+</configuration>
