@@ -1,5 +1,7 @@
 package org.example.deets.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.deets.exceptions.UrlNotFoundException;
@@ -22,9 +24,13 @@ public class UrlService {
     private final UrlRepository repository;
     private final RedisService redisService;
     private final RandomCodeGenerator keyGeneratorService;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.base-url}")
     private String appBaseUrl;
+
+    @Value("${cache.ttl:3600}")
+    private long ttlSeconds;
 
     private String getUrlWithCode(String code){
         return "%s/%s".formatted(appBaseUrl, code);
@@ -32,10 +38,16 @@ public class UrlService {
 
     private Url saveUrlToDb(Url url){
         try {
+            redisService.setValueWithExpiry(url.getCode(), objectMapper.writeValueAsString(url), ttlSeconds);
+            redisService.setValueWithExpiry(url.getLongUrl(), objectMapper.writeValueAsString(url), ttlSeconds);
+            redisService.setValueWithExpiry(String.valueOf(url.getId()), objectMapper.writeValueAsString(url), ttlSeconds);
             return repository.save(url);
         } catch (DataIntegrityViolationException dev) {
             log.error("Duplicate code collision on save: {}", url.getCode(), dev);
             throw new IllegalArgumentException("Alias already exists");
+        } catch (JsonProcessingException jpe){
+            log.error("Json processing exception");
+            return null;
         }
     }
 
@@ -99,7 +111,7 @@ public class UrlService {
         }
 
         url.get().setCode(code);
-        redisService.delete(new String[]{code, String.valueOf(id)});
+        redisService.delete(new String[]{code, String.valueOf(id), url.get().getLongUrl()});
         log.info("Url updated successfully with id: {}, new: {}", url.get().getId(), url.get().getCode());
         return saveUrlToDb(url.get());
     }

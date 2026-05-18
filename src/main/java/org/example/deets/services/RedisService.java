@@ -1,6 +1,7 @@
 package org.example.deets.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -15,7 +16,8 @@ public class RedisService {
     private final JedisPool redis;
     private final ObjectMapper objectMapper;
 
-    private final long ttlSeconds = 3600;
+    @Value("${cache.ttl:3600}")
+    private long ttlSeconds;
 
     public void setValue(String key, String value) {
         try (Jedis jedis = redis.getResource()) {
