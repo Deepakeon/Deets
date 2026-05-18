@@ -176,13 +176,13 @@ Each test was executed with ~200 virtual users over 5 minutes with ramp-up.
 
 
 ## Future Scope
-- Custom alias support (POST /api/urls with optional customCode)
-- Link expiration (expire at timestamp or after N days)
-- Click analytics (total clicks, last accessed, basic referrer/user-agent stats)
-- Rate limiting + abuse protection (per IP/API key, especially for shorten endpoint)
-- Soft delete / disable link (keep record but stop redirects)
-- User/API key ownership (each link belongs to a user or client key)
-- QR code endpoint for each short URL
-- Bulk URL shortening (upload/list input, batched response)
-- Health + readiness + deeper metrics (DB/Redis latency, cache hit ratio)
-- OpenAPI/Swagger docs
+- [ ] Custom alias support (POST /api/urls with optional customCode)
+- [ ] Link expiration (expire at timestamp or after N days)
+- [ ] Click analytics (total clicks, last accessed, basic referrer/user-agent stats)
+- [ ] Rate limiting + abuse protection (per IP/API key, especially for shorten endpoint)
+- [ ] Soft delete / disable link (keep record but stop redirects)
+- [ ] User/API key ownership (each link belongs to a user or client key)
+- [ ] QR code endpoint for each short URL
+- [ ] Bulk URL shortening (upload/list input, batched response)
+- [ ] Health + readiness + deeper metrics (DB/Redis latency, cache hit ratio)
+- [ ] OpenAPI/Swagger docs
